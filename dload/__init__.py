@@ -83,30 +83,32 @@ def get_default_path():
 
 
 def save(url, path="", overwrite=False):
-    """
-    Download and save a remote file
-    :param url: str - file url to download
-    :param path: str - (optional) Full path to save the file, ex: c:/test.txt or /home/test.txt.
-    Defaults to script location and url filename
-    :param overwrite: bool - (optional)  If True the local file will be overwritten, False will skip the download
-    :return: str - The full path of the downloaded file or an empty string
-    """
+	"""
+	Download and save a remote file
+	:param url: str - file url to download
+	:param path: str - (optional) Full path to save the file, ex: c:/test.txt or /home/test.txt.
+	Defaults to script location and url filename
+	:param overwrite: bool - (optional)  If True the local file will be overwritten, False will skip the download
+	:return: str - The full path of the downloaded file or an empty string
+	"""
 
-    try:
-        c_path = get_default_path()
-        fn = os.path.basename(urlparse(url).path)
-        fn = fn if fn else f"dload{rand_fn()}"
-        path = path if path.strip() else c_path+os.path.sep+fn
-        if not overwrite and os.path.isfile(path):
-            return path
-        r = requests.get(url)
-        with open(path, 'wb') as f:
-            f.write(r.content)
-        return path
-    except:
-        pass
-        print(traceback.print_exc())
-        return ""
+	try:
+		c_path = c_path = get_default_path()
+		fn = os.path.basename(urlparse(url).path)
+		fn = fn if fn else f"dload{rand_fn()}"
+		path = path if path.strip() else c_path+os.path.sep+fn
+		if not overwrite and os.path.isfile(path):
+			return path
+		with requests.get(url, stream=True) as r:
+			r.raise_for_status()
+			with open(path, 'wb') as f:
+				for chunk in r.iter_content(chunk_size=8192):
+					f.write(chunk)
+		return path
+	except:
+		pass
+		print(traceback.print_exc())
+		return ""
 
 
 def text(url, encoding=""):
