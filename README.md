@@ -16,7 +16,9 @@ pip install dload
 ```
 
 Inside a colab notebook the package can be installed from this repository:
+```
 !pip install git+https://github.com/regtm/dload.git
+```
 
 Load `dload` into your code : 
 
